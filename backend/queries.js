@@ -16,18 +16,25 @@ export const getUsers = (request, response) => {
       if (error) {
         throw error
       }
+      response.set('Access-Control-Allow-Origin', '*');
       response.status(200).json(results.rows)
+      
     })
 }
 
 // Add new user
 export const createUser = (request, response) => {
-    const { name, email } = request.body
-  
+    const name = request.query.name
+    const email = request.query.email
+
+    console.log(name)
+    console.log(email)
+
     pool.query('INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *', [name, email], (error, results) => {
       if (error) {
         throw error
       }
+      response.set('Access-Control-Allow-Origin', '*');
       response.status(201).send(`User added with ID: ${results.rows[0].id}`)
     })
 }
@@ -39,6 +46,7 @@ export const deleteUser = (request, response) => {
       if (error) {
         throw error
       }
+      response.set('Access-Control-Allow-Origin', '*');
       response.status(200).send(`User deleted with ID: ${id}`)
     })
   }  

@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
 
 app.get('/users', getUsers)
 app.post('/users', createUser)
-app.delete('/users/:id', deleteUser)
+app.delete('/users', deleteUser)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

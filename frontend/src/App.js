@@ -5,6 +5,9 @@ import axios from 'axios';
 
 const App = () => {
   const [testData, setTestData] = useState("");
+  const [users, setUsers] = useState([])
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     getData()
@@ -15,6 +18,31 @@ const App = () => {
       .then(response => {
         setTestData(response.data)
       });
+
+      axios.get('http://localhost:4000/users')
+      .then(response => {
+        setUsers(response.data)
+      });
+  }
+
+  const postData = (input) => {
+    // const params = new URLSearchParams();
+    let name = input.name
+    let email = input.email
+    // params.append('name', input.name);
+    // params.append('email', input.email);
+   
+    axios.post('http://localhost:4000/users', null, { 
+      params: {
+        name,
+        email
+    }})
+      .then(response => {
+        getData()
+       // alert(JSON.stringify(response))
+        // setUsers(response.data)
+      });
+    // alert(JSON.stringify(input))
   }
 
   return (
@@ -32,6 +60,20 @@ const App = () => {
         >
           Learn React
         </a>
+        <form onSubmit={(event) => event.preventDefault()}>
+        <label>
+          <input type="text" name="name" placeholder="Name" value={name} onChange={(event) => setName(event.target.value)}/>
+          <input type="email" name="email" placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)}/>
+        </label>
+        <input type="submit" value="Add new user" onClick={() => postData({"name": name, "email": email})} />
+      </form>
+        <nav>
+        <ul>
+            {users.map(u => (
+            <li key={u.id}>{u.name}  [ {u.email} ]</li>
+          ))}
+        </ul>
+        </nav>
       </header>
     </div>
   );
