@@ -1,28 +1,40 @@
-import logo from './logo.svg';
+import logoKryz from './logo.png'
 import './App.css';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const App = () => {
   const [testData, setTestData] = useState("");
+  const [dbConnection, setDBConnection] = useState("");
   const [users, setUsers] = useState([])
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+
+  const backendURL = process.env.REACT_APP_BACKEND_ENDPOINT
+
+  // const backendURL = "http://localhost:4000"
+
 
   useEffect(() => {
     getData()
   }, []);
 
   const getData = () => {
-      axios.get('http://localhost:4000')
-      .then(response => {
-        setTestData(response.data)
-      });
+    
+    axios.get(backendURL)
+    .then(response => {
+      setTestData(response.data)
+    });
 
-      axios.get('http://localhost:4000/users')
-      .then(response => {
+    axios.get(backendURL + '/users', { timeout: 9000})
+    .catch((error) => {
+      setDBConnection(error.toJSON().code)
+    })
+    .then(response => {
+      if(response){
         setUsers(response.data)
-      });
+      }
+    });
   }
 
   const postData = (input) => {
@@ -31,8 +43,8 @@ const App = () => {
     let email = input.email
     // params.append('name', input.name);
     // params.append('email', input.email);
-   
-    axios.post('http://localhost:4000/users', null, { 
+    
+    axios.post(backendURL + '/users', null, { 
       params: {
         name,
         email
@@ -43,14 +55,18 @@ const App = () => {
         // setUsers(response.data)
       });
     // alert(JSON.stringify(input))
+    
   }
 
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <img src={logoKryz} className="App-logo" alt="logo" />
         <p>
-        {testData}
+        Backend status: <b>{testData ? testData : "DISCONNECTED"}</b>
+        </p>
+        <p>
+        DB status: <b>{dbConnection ? "DISCONNECTED" : "CONNECTED!"}</b>
         </p>
         <a
           className="App-link"
